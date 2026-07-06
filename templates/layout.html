@@ -162,13 +162,13 @@
     <script>
       const setTheme = (theme) => {
         if (theme === 'auto') {
-          document.documentElement.setAttribute('data-bs-theme', 
+          document.documentElement.setAttribute('data-bs-theme',
             window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         } else {
           document.documentElement.setAttribute('data-bs-theme', theme);
         }
         localStorage.setItem('theme', theme);
-        
+
         // Update button text
         const themeText = { light: '🌝 Light', dark: '🌚 Dark', auto: '🌗 Auto' };
         document.getElementById('bd-theme-text').textContent = themeText[theme];

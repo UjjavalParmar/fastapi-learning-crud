@@ -31,3 +31,4 @@ class Post(Base):
 		ForeignKey("users.id"), nullable=False, index=True
 		)
 	date_posted: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
+	author: Mapped[User] = relationship(back_populates="posts")

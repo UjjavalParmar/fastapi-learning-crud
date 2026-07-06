@@ -22,27 +22,30 @@ app.mount("/media", StaticFiles(directory="media"), name="media")
 
 templates = Jinja2Templates(directory="templates")
 
-posts: list[dict] = [
-    {
-        "id": 1,
-        "author": "Ujjaval Parmar",
-        "title": "FastAPI is Awesome",
-        "content": "This framework is really easy to use and super fast.",
-        "date_posted": "April 20, 2025",
-    },
-    {
-        "id": 2,
-        "author": "Ujjaval Parmar",
-        "title": "Python is Great for Web Development",
-        "content": "Python is a great language for web development, and FastAPI makes it even better.",
-        "date_posted": "April 21, 2025",
-    },
-]
+# posts: list[dict] = [
+#     {
+#         "id": 1,
+#         "author": "Ujjaval Parmar",
+#         "title": "FastAPI is Awesome",
+#         "content": "This framework is really easy to use and super fast.",
+#         "date_posted": "April 20, 2025",
+#     },
+#     {
+#         "id": 2,
+#         "author": "Ujjaval Parmar",
+#         "title": "Python is Great for Web Development",
+#         "content": "Python is a great language for web development, and FastAPI makes it even better.",
+#         "date_posted": "April 21, 2025",
+#     },
+# ]
+#
 
 
 @app.get("/", include_in_schema=False, name="home")
 @app.get("/posts", include_in_schema=False, name="posts")
-def home(request: Request):
+def home(request: Request, db: Annotated[Session, Depends(get_db)]):
+    results = db.execute(select(models.Post))
+    posts = results.scalars().all()
     return templates.TemplateResponse(
         request,
         "home.html",
@@ -51,19 +54,39 @@ def home(request: Request):
 
 
 @app.get("/posts/{post_id}", include_in_schema=False)
-def post_page(request: Request, post_id: int):
-    for post in posts:
-        if post.get("id") == post_id:
-            title = post["title"][:50]
-            return templates.TemplateResponse(
-                request,
-                "post.html",
-                {"post": post, "title": title},
-            )
+def post_page(request: Request, post_id: int, db: Annotated[Session, Depends(get_db)]):
+    results = db.execute(select(models.Post).where(models.Post.id == post_id))
+    post = results.scalars().first()
+
+    if post:
+        title = post.title[:50]
+        return templates.TemplateResponse(
+            request,
+            "post.html",
+            {"post": post, "title": title},
+        )
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
 
 
-@app.post("/api/users", response_model=UserCreate, status_code=status.HTTP_201_CREATED)
+@app.get("/users/{user_id}/posts", include_in_schema=False, name="user_posts")
+def user_post_page(
+    request: Request, user_id: int, db: Annotated[Session, Depends(get_db)]
+):
+    results = db.execute(select(models.User).where(models.User.id == user_id))
+    user = results.scalars().first()
+    if not user:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    results = db.execute(select(models.Post).where(models.Post.user_id == user_id))
+    posts = results.scalars().all()
+    return templates.TemplateResponse(
+        request,
+        "user_posts.html",
+        {"posts": posts, "user": user, "title": f"{user.username}'s Posts"},
+    )
+
+
+@app.post("/api/users", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def create_user(user: UserCreate, db: Annotated[Session, Depends(get_db)]):
     result = db.execute(
         select(models.User).where(models.User.username == user.username)
@@ -97,7 +120,7 @@ def get_user(user_id: int, db: Annotated[Session, Depends(get_db)]):
     result = db.execute(
         select(models.User).where(models.User.id == user_id),
     )
-    user = result.scalar().first()
+    user = result.scalars().first()
 
     if user:
         return user
@@ -106,39 +129,36 @@ def get_user(user_id: int, db: Annotated[Session, Depends(get_db)]):
 
 @app.get("/api/posts", response_model=list[PostResponse])
 def get_posts(post_id: int, db: Annotated[Session, Depends(get_db)]):
-    result = db.execute(
-        select(models.Post).where(models.Post.id == post_id)
-    )
+    result = db.execute(select(models.Post).where(models.Post.id == post_id))
 
-    post = result.scalar().first()
+    post = result.scalars().first()
 
     if post:
         return post
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
 
+
 @app.post("/api/posts", response_model=PostCreate, status_code=status.HTTP_201_CREATED)
-def create_post(post: PostCreate):
-    if posts:
-        biggest_id = max(p["id"] for p in posts)
-        new_id = biggest_id + 1
-    else:
-        new_id = 1
-    new_post = {
-        "id": new_id,
-        "author": post.author,
-        "title": post.title,
-        "content": post.content,
-        "date_posted": "June 27, 2026",
-    }
-    posts.append(new_post)
+def create_post(post: PostCreate, db: Annotated[Session, Depends(get_db)]):
+    results = db.execute(select(models.User).where(models.User.id == post.user_id))
+    user = results.scalars().first()
+    if not user:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    new_post = models.Post(title=post.title, content=post.content, user_id=post.user_id)
+    db.add(new_post)
+    db.commit()
+    db.refresh(new_post)
+
     return new_post
 
 
 @app.get("/api/posts/{post_id}")
-def get_post(post_id: int):
-    for post in posts:
-        if post.get("id") == post_id:
-            return post
+def get_post(post_id: int, db: Annotated[Session, Depends(get_db)]):
+    results = db.execute(select(models.Post).where(models.Post.id == post_id))
+    post = results.scalars().first()
+    if post:
+        return post
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
 
 
