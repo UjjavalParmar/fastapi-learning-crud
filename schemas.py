@@ -47,4 +47,3 @@ class PostResponse(PostBase):
     user_id: int
     date_posted: datetime
     author: UserResponse
-

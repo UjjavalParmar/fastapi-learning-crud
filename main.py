@@ -1,4 +1,3 @@
-from os import stat
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException, Request, status
@@ -8,9 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from sqlalchemy.sql.functions import mode
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from starlette.status import HTTP_404_NOT_FOUND
 
 import models
 from database import Base, engine, get_db
