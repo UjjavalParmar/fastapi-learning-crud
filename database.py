@@ -7,10 +7,6 @@ SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite:///./blog.db"
 engine = create_async_engine(
     SQLALCHEMY_DATABASE_URL,
     echo=True,
-    pool_size=10,          
-    max_overflow=20,       
-
-    connect_args={"check_same_thread": False},
 )
 
 AsyncSessionLocal = async_sessionmaker(
