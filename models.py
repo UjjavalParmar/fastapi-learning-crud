@@ -17,6 +17,8 @@ class User(Base):
     image_file: Mapped[str | None] = mapped_column(
         String(200), nullable=True, default=None
     )
+    password_hash: Mapped[str] = mapped_column(String(200), nullable=False)
+
     posts: Mapped[list[Post]] = relationship(
         back_populates="author", cascade="all, delete-orphan"
     )
