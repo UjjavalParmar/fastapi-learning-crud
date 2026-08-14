@@ -36,3 +36,23 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
     )
 
     return encode_jwt
+
+
+def verify_access_token(token: str) -> str | None:
+    """
+    in this method: we use it to verify JWT access token
+
+    and return subject(sub/ user id) if valid
+    """
+
+    try:
+        payload = jwt.decode(
+            token,
+            settings.secret_key.get_secret_value(),
+            algorithms=[settings.algorithm],
+            options={"require": ["exp", "sub"]},
+        )
+    except jwt.InvalidTokenError:
+        return None
+    else:
+        return payload.get("sub")
