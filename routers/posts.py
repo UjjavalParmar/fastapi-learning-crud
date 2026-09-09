@@ -1,4 +1,3 @@
-from os import stat
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status, Query
@@ -9,16 +8,16 @@ from sqlalchemy.orm import selectinload
 import models
 from auth import CurrentUser
 from database import get_db
-from schemas import PostCreate, PostResponse, PostUpdate, PaginatedPostsResponse
+from schemas import PostBase, PostResponse, PostUpdate, PaginatedPostsResponse
 
 router = APIRouter()
 
 
 @router.get("", response_model=PaginatedPostsResponse)
 async def get_posts(
-    db: Annotated[AsyncSession, Depends(get_db)], 
-    skip: Annotated[int, Query(ge=0)]= 0,
-    limit: Annotated[int,Query(ge=1,le=100)] = 10
+    db: Annotated[AsyncSession, Depends(get_db)],
+    skip: Annotated[int, Query(ge=0)] = 0,
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
 ):
     count_results = await db.execute(select(func.count()).select_from(models.Post))
     total = count_results.scalar() or 0
@@ -48,7 +47,7 @@ async def get_posts(
     status_code=status.HTTP_201_CREATED,
 )
 async def create_post(
-    post: PostCreate,
+    post: PostBase,
     current_user: CurrentUser,
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
@@ -80,7 +79,7 @@ async def get_post(post_id: int, db: Annotated[AsyncSession, Depends(get_db)]):
 @router.put("/{post_id}", response_model=PostResponse)
 async def update_post_full(
     post_id: int,
-    post_data: PostCreate,
+    post_data: PostBase,
     current_user: CurrentUser,
     db: Annotated[AsyncSession, Depends(get_db)],
 ):

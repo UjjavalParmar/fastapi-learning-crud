@@ -2,15 +2,10 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
-from database import Base
 
-
-class UserBase(BaseModel):
+class UserCreate(BaseModel):
     username: str = Field(min_length=1, max_length=50)
     email: EmailStr = Field(max_length=120)
-
-
-class UserCreate(UserBase):
     password: str = Field(min_length=8)
 
 
@@ -42,10 +37,6 @@ class PostBase(BaseModel):
     content: str = Field(min_length=1)
 
 
-class PostCreate(PostBase):
-    pass
-
-
 class PostUpdate(BaseModel):
     title: str = Field(min_length=1, max_length=100)
     content: str = Field(min_length=1)
@@ -58,6 +49,7 @@ class PostResponse(PostBase):
     user_id: int
     date_posted: datetime
     author: UserPublic
+
 
 class PaginatedPostsResponse(BaseModel):
     posts: list[PostResponse]

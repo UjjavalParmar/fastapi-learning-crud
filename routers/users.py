@@ -1,7 +1,7 @@
 from datetime import timedelta
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, status, Query
 from fastapi.security import OAuth2PasswordRequestForm
 from PIL import UnidentifiedImageError
 from sqlalchemy import func, select
@@ -19,7 +19,15 @@ from auth import (
 from config import settings
 from database import get_db
 from image_utils import delete_profile_image, process_profile_image
-from schemas import PostResponse, Token, UserCreate, UserPrivate, UserPublic, UserUpdate
+from schemas import (
+    PostResponse,
+    Token,
+    UserCreate,
+    UserPrivate,
+    UserPublic,
+    UserUpdate,
+    PaginatedPostsResponse,
+)
 
 router = APIRouter()
 
@@ -104,8 +112,13 @@ async def get_user(user_id: int, db: Annotated[AsyncSession, Depends(get_db)]):
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
 
-@router.get("/{user_id}/posts", response_model=list[PostResponse])
-async def get_user_posts(user_id: int, db: Annotated[AsyncSession, Depends(get_db)]):
+@router.get("/{user_id}/posts", response_model=PaginatedPostsResponse)
+async def get_user_posts(
+    user_id: int,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    skip: Annotated[int, Query(ge=0)] = 0,
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+):
     result = await db.execute(select(models.User).where(models.User.id == user_id))
     user = result.scalars().first()
     if not user:
@@ -113,14 +126,31 @@ async def get_user_posts(user_id: int, db: Annotated[AsyncSession, Depends(get_d
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found",
         )
+    count_result = await db.execute(
+        select(func.count())
+        .select_from(models.Post)
+        .where(models.Post.user_id == user_id),
+    )
+
+    total = count_result.scalar() or 0
+
     result = await db.execute(
         select(models.Post)
         .options(selectinload(models.Post.author))
         .where(models.Post.user_id == user_id)
-        .order_by(models.Post.date_posted.desc()),
+        .order_by(models.Post.date_posted.desc())
+        .offset(skip)
+        .limit(limit)
     )
     posts = result.scalars().all()
-    return posts
+    has_more = skip + len(posts) < total
+    return PaginatedPostsResponse(
+        posts=[PostResponse.model_validate(post) for post in posts],
+        total=total,
+        skip=skip,
+        limit=limit,
+        has_more=has_more,
+    )
 
 
 @router.patch("/{user_id}", response_model=UserPrivate)
@@ -218,12 +248,12 @@ async def uploas_profile_picture(
     user_id: int,
     file: UploadFile,
     current_user: CurrentUser,
-    db: Annotated[AsyncSession, Depends(get_db)]
+    db: Annotated[AsyncSession, Depends(get_db)],
 ):
     if current_user.id != user_id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not autorized to update this user's picture"
+            detail="Not autorized to update this user's picture",
         )
 
     content = await file.read()
@@ -231,7 +261,7 @@ async def uploas_profile_picture(
     if len(content) > settings.max_upload_size_bytes:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"File too large. Max size is {settings.max_upload_size_bytes//(1024*1024)}MB"
+            detail=f"File too large. Max size is {settings.max_upload_size_bytes // (1024 * 1024)}MB",
         )
 
     try:
@@ -239,7 +269,7 @@ async def uploas_profile_picture(
     except UnidentifiedImageError as err:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid img file. Please upload a valid image (JPEG,PNG,GIF,WebP)."
+            detail="Invalid img file. Please upload a valid image (JPEG,PNG,GIF,WebP).",
         ) from err
     old_filename = current_user.image_file
 
@@ -251,6 +281,7 @@ async def uploas_profile_picture(
         delete_profile_image(old_filename)
 
     return current_user
+
 
 @router.delete("/{user_id}/picture", response_model=UserPrivate)
 async def delete_user_picture(
