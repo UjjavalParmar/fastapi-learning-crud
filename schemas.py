@@ -3,9 +3,12 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
-class UserCreate(BaseModel):
+class UserBase(BaseModel):
     username: str = Field(min_length=1, max_length=50)
     email: EmailStr = Field(max_length=120)
+
+
+class UserCreate(UserBase):
     password: str = Field(min_length=8)
 
 
@@ -24,7 +27,7 @@ class UserPrivate(UserPublic):
 
 class UserUpdate(BaseModel):
     username: str | None = Field(default=None, min_length=1, max_length=50)
-    email: EmailStr | None = Field(default=None, min_length=120)
+    email: EmailStr | None = Field(default=None, max_length=120)
 
 
 class Token(BaseModel):
@@ -37,9 +40,13 @@ class PostBase(BaseModel):
     content: str = Field(min_length=1)
 
 
+class PostCreate(PostBase):
+    pass
+
+
 class PostUpdate(BaseModel):
-    title: str = Field(min_length=1, max_length=100)
-    content: str = Field(min_length=1)
+    title: str | None = Field(default=None, min_length=1, max_length=100)
+    content: str | None = Field(default=None, min_length=1)
 
 
 class PostResponse(PostBase):

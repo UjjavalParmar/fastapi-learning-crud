@@ -1,14 +1,15 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query
-from sqlalchemy import select, func
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 import models
 from auth import CurrentUser
+from config import settings
 from database import get_db
-from schemas import PostBase, PostResponse, PostUpdate, PaginatedPostsResponse
+from schemas import PaginatedPostsResponse, PostCreate, PostResponse, PostUpdate
 
 router = APIRouter()
 
@@ -17,19 +18,21 @@ router = APIRouter()
 async def get_posts(
     db: Annotated[AsyncSession, Depends(get_db)],
     skip: Annotated[int, Query(ge=0)] = 0,
-    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    limit: Annotated[int, Query(ge=1, le=100)] = settings.posts_per_page,
 ):
-    count_results = await db.execute(select(func.count()).select_from(models.Post))
-    total = count_results.scalar() or 0
+
+    count_result = await db.execute(select(func.count()).select_from(models.Post))
+    total = count_result.scalar() or 0
 
     result = await db.execute(
         select(models.Post)
         .options(selectinload(models.Post.author))
         .order_by(models.Post.date_posted.desc())
         .offset(skip)
-        .limit(limit)
+        .limit(limit),
     )
     posts = result.scalars().all()
+
     has_more = skip + len(posts) < total
 
     return PaginatedPostsResponse(
@@ -47,11 +50,10 @@ async def get_posts(
     status_code=status.HTTP_201_CREATED,
 )
 async def create_post(
-    post: PostBase,
+    post: PostCreate,
     current_user: CurrentUser,
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
-
     new_post = models.Post(
         title=post.title,
         content=post.content,
@@ -79,7 +81,7 @@ async def get_post(post_id: int, db: Annotated[AsyncSession, Depends(get_db)]):
 @router.put("/{post_id}", response_model=PostResponse)
 async def update_post_full(
     post_id: int,
-    post_data: PostBase,
+    post_data: PostCreate,
     current_user: CurrentUser,
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
