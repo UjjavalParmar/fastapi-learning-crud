@@ -16,3 +16,6 @@ dependencies = [
     "sqlalchemy>=2.0.51",
     "starlette>=0.50.0",
 ]
+
+[tool.black]
+target-version = ["py312"]
