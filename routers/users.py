@@ -1,27 +1,43 @@
-from datetime import timedelta
+from datetime import UTC, datetime, timedelta
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, status
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    HTTPException,
+    Query,
+    UploadFile,
+    status,
+)
 from fastapi.security import OAuth2PasswordRequestForm
 from PIL import UnidentifiedImageError
+from sqlalchemy import delete as sql_delete
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
+from sqlalchemy.util import await_only
 from starlette.concurrency import run_in_threadpool
 
 import models
 from auth import (
     CurrentUser,
     create_access_token,
+    generate_reset_token,
     hash_password,
+    hash_reset_token,
     verify_password,
 )
 from config import settings
 from database import get_db
+from email_utils import send_password_reset_email
 from image_utils import delete_profile_image, process_profile_image
 from schemas import (
+    ChangePassReq,
+    ForgotPassReq,
     PaginatedPostsResponse,
     PostResponse,
+    ResetPassReq,
     Token,
     UserCreate,
     UserPrivate,
@@ -106,6 +122,38 @@ async def login_for_access_token(
 @router.get("/me", response_model=UserPrivate)
 async def get_current_user(current_user: CurrentUser):
     return current_user
+
+
+@router.post("/forgot_password", status_code=status.HTTP_202_ACCEPTED)
+async def forgot_password(
+    req_data: ForgotPassReq,
+    background_tasks: BackgroundTasks,
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    result = await db.execute(
+        select(models.User).where(
+            func.lower(models.User.email) == req_data.email.lower()
+        )
+    )
+    user = result.scalars().first()
+    if user:
+        await db.execute(
+            sql_delete(models.PasswordResetToken).where(
+                models.PasswordResetToken.user_id == user.id,
+            ),
+        )
+
+    token = generate_reset_token()
+    token_hash = hash_reset_token(token)
+    expires_at = datetime.now(UTC) + timedelta(
+        minutes=settings.reset_token_expire_minutes
+    )
+
+    reset_token = models.PasswordResetToken(
+        user_id=user.id,
+        token_hash=token_hash,
+        expires_at=expires_at,
+    )
 
 
 @router.get("/{user_id}", response_model=UserPublic)

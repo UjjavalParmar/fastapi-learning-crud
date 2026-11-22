@@ -64,3 +64,17 @@ class PaginatedPostsResponse(BaseModel):
     skip: int
     limit: int
     has_more: bool
+
+
+class ForgotPassReq(BaseModel):
+    email: EmailStr = Field(max_length=120)
+
+
+class ResetPassReq(BaseModel):
+    token: str
+    new_password: str = Field(min_length=8)
+
+
+class ChangePassReq(BaseModel):
+    current_password: str
+    new_password: str = Field(min_length=8)
