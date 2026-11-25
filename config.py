@@ -1,4 +1,4 @@
-from pydantic import SecretStr
+from pydantic import EmailStr, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     mail_port: int = 587
     mail_username: str = ""
     mail_password: SecretStr = SecretStr("")
-    mail_from: str = "noreply@example.com"
+    mail_from: EmailStr = "noreply@example.com"
     mail_use_tls: bool = True
 
     frontend_url: str = "http://localhost:8000"
