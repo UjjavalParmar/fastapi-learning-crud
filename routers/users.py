@@ -16,7 +16,6 @@ from sqlalchemy import delete as sql_delete
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
-from sqlalchemy.util import await_only
 from starlette.concurrency import run_in_threadpool
 
 import models
@@ -124,18 +123,19 @@ async def get_current_user(current_user: CurrentUser):
     return current_user
 
 
-@router.post("/forgot_password", status_code=status.HTTP_202_ACCEPTED)
+@router.post("/forgot-password", status_code=status.HTTP_202_ACCEPTED)
 async def forgot_password(
-    req_data: ForgotPassReq,
+    request_data: ForgotPassReq,
     background_tasks: BackgroundTasks,
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     result = await db.execute(
         select(models.User).where(
-            func.lower(models.User.email) == req_data.email.lower()
-        )
+            func.lower(models.User.email) == request_data.email.lower(),
+        ),
     )
     user = result.scalars().first()
+
     if user:
         await db.execute(
             sql_delete(models.PasswordResetToken).where(
@@ -143,17 +143,95 @@ async def forgot_password(
             ),
         )
 
-    token = generate_reset_token()
-    token_hash = hash_reset_token(token)
-    expires_at = datetime.now(UTC) + timedelta(
-        minutes=settings.reset_token_expire_minutes
-    )
+        token = generate_reset_token()
+        reset_token = models.PasswordResetToken(
+            user_id=user.id,
+            token_hash=hash_reset_token(token),
+            expires_at=datetime.now(UTC)
+            + timedelta(minutes=settings.reset_token_expire_minutes),
+        )
+        db.add(reset_token)
+        await db.commit()
 
-    reset_token = models.PasswordResetToken(
-        user_id=user.id,
-        token_hash=token_hash,
-        expires_at=expires_at,
+        background_tasks.add_task(
+            send_password_reset_email,
+            to_email=user.email,
+            username=user.username,
+            token=token,
+        )
+
+    return {
+        "message": "If an account exists with this email, you will receive password reset instructions."
+    }
+
+
+@router.post("/reset-password", status_code=status.HTTP_200_OK)
+async def reset_password(
+    request_data: ResetPassReq,
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    token_hash = hash_reset_token(request_data.token)
+    result = await db.execute(
+        select(models.PasswordResetToken).where(
+            models.PasswordResetToken.token_hash == token_hash,
+        ),
     )
+    reset_token = result.scalars().first()
+
+    if not reset_token:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired reset token",
+        )
+
+    expires_at = reset_token.expires_at.replace(tzinfo=UTC)
+    if expires_at <= datetime.now(UTC):
+        await db.delete(reset_token)
+        await db.commit()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired reset token",
+        )
+
+    user = await db.get(models.User, reset_token.user_id)
+    if not user:
+        await db.delete(reset_token)
+        await db.commit()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired reset token",
+        )
+
+    user.password_hash = hash_password(request_data.new_password)
+    await db.execute(
+        sql_delete(models.PasswordResetToken).where(
+            models.PasswordResetToken.user_id == user.id,
+        ),
+    )
+    await db.commit()
+    return {"message": "Password reset successfully"}
+
+
+@router.patch("/me/password", status_code=status.HTTP_200_OK)
+async def change_password(
+    password_data: ChangePassReq,
+    current_user: CurrentUser,
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    if not verify_password(password_data.current_password, current_user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Current password is incorrect",
+        )
+
+    current_user.password_hash = hash_password(password_data.new_password)
+    await db.execute(
+        sql_delete(models.PasswordResetToken).where(
+            models.PasswordResetToken.user_id == current_user.id,
+        ),
+    )
+    await db.commit()
+    return {"message": "Password changed successfully"}
 
 
 @router.get("/{user_id}", response_model=UserPublic)

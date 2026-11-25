@@ -14,222 +14,222 @@ POPULATE_IMAGES_DIR = Path("populate_images")
 
 USERS = [
     {
-        "username": "CoreyMSchafer",
-        "email": "CoreyMSchafer@gmail.com",
-        "password": "TestPassword1!",
-        "image": "corey.png",
+        "username": "UjjavalParmar",
+        "email": "UjjavalParmar@gmail.com",
+        "password": "DemoPass1!",
+        "image": "Gemini_Generated_Image_17vmvh17vmvh17vm.png",
     },
     {
-        "username": "DefaultDude",
-        "email": "TestEmail2@test.com",
-        "password": "TestPassword2!",
-        # No image - uses default
+        "username": "MiraBuilds",
+        "email": "mira@example.com",
+        "password": "DemoPass2!",
+        "image": "Gemini_Generated_Image_91eqo591eqo591eq.png",
     },
     {
-        "username": "WillowTheCat",
-        "email": "TestEmail3@test.com",
-        "password": "TestPassword3!",
-        "image": "willow.png",
+        "username": "SamOnCall",
+        "email": "sam@example.com",
+        "password": "DemoPass3!",
+        # No image - uses the default profile picture.
     },
     {
-        "username": "FarmDogs",
-        "email": "TestEmail4@test.com",
-        "password": "TestPassword4!",
-        "image": "farmdogs.png",
+        "username": "NiaWritesCode",
+        "email": "nia@example.com",
+        "password": "DemoPass4!",
+        # No image - uses the default profile picture.
     },
     {
-        "username": "PoppyTheCoder",
-        "email": "TestEmail5@test.com",
-        "password": "TestPassword5!",
-        "image": "poppy.png",
+        "username": "TheoMakesThings",
+        "email": "theo@example.com",
+        "password": "DemoPass5!",
+        "image": "Media.jpeg",
     },
     {
-        "username": "GoodBoyBronx",
-        "email": "TestEmail6@test.com",
-        "password": "TestPassword6!",
-        "image": "bronx.png",
+        "username": "RaviLearns",
+        "email": "ravi@example.com",
+        "password": "DemoPass6!",
+        # No image - uses the default profile picture.
     },
 ]
 
 POSTS = [
     {
-        "title": "Why I Love FastAPI",
-        "content": "FastAPI has completely changed how I build APIs. The automatic documentation, type hints, and async support make development so much faster. Plus, the performance is incredible!",
+        "title": "The First Request Is a Tiny Production",
+        "content": "My first API endpoint was one route and one response. It still had a client, a server, a contract, and a failure mode. Treating that small slice like a miniature production system helped me ask better questions: what comes in, what should go out, and what happens when the input is wrong?",
     },
     {
-        "title": "Corey Schafer Has the Best YouTube Tutorials!",
-        "content": "This was written by a viewer and definitely not by me... I mean him. Totally not written by him, but by me... a real viewer. Seriously, check out his channel for amazing Python content.",
+        "title": "Type Hints Are a Shared Map",
+        "content": "A type hint is not a force field around a value at runtime. It is a useful map for editors, readers, and tools. In a FastAPI endpoint, those hints can also help the framework understand how to validate input and describe the API, which is why the same annotation can serve several jobs.",
     },
     {
-        "title": "Async/Await Finally Clicked",
-        "content": "I've been struggling with async programming for months, but FastAPI's approach finally made it click. Using 'async def' for endpoints and 'await' for database calls just makes sense.",
+        "title": "Schemas Are the Front Desk",
+        "content": "The database model describes how information is stored. A request schema describes what a caller is allowed to hand us. A response schema describes what we choose to send back. Keeping those roles separate is like having a front desk check a form before it reaches the filing room.",
     },
     {
-        "title": "Schafer? I Barely Know Her!",
-        "content": "Is anyone actually reading these blog posts? Do they really need to say anything? I can keep going all day. At least AI can... Claude, keep going, please.",
+        "title": "Validation Is a Boundary, Not Decoration",
+        "content": "A title that is too long or a password that is too short should be rejected before it becomes database state. Pydantic constraints make those rules visible beside the fields they protect. A good validation error tells the caller what to fix without exposing private internals.",
     },
     {
-        "title": "Pydantic Validation is Magic",
-        "content": "The way Pydantic handles validation in FastAPI is incredible. Define your model with type hints, and boom - automatic validation, serialization, and documentation. No more writing validation code by hand!",
+        "title": "What a Database Session Actually Does",
+        "content": "I used to picture a session as the database itself. It is closer to a workbench for one unit of work: load records, make changes, commit them, or roll them back. The database is still a separate service or file underneath, and the session has to be closed when the work is done.",
     },
     {
-        "title": "From Flask to FastAPI",
-        "content": "I made the switch from Flask to FastAPI last month. The learning curve was minimal, and the benefits are huge. Automatic OpenAPI docs, better performance, and native async support. No regrets!",
+        "title": "A Foreign Key Is a Promise",
+        "content": "A post's user_id is not just a number that happens to match a user. A foreign key asks the database to enforce that relationship: the referenced user must exist. It is a small rule with a big payoff, because application code is not the only thing capable of making mistakes.",
     },
     {
-        "title": "Some of My Favorite Horror Movies",
-        "content": "I love horror movies and practical effects. One of my favorites is 'The Thing'. Hereditary is a great modern one, but most people have seen it. One modern one I really liked that not as many people have seen is 'The Night House'. It's a slow burn but really effective. More psychological than jump-scare based.",
+        "title": "One User, Many Posts",
+        "content": "The relationship is easier to see with two tables: one user can own many posts, while each post points back to one author. SQLAlchemy lets code walk that relationship, but the foreign key is what stores the connection. When I separate the Python convenience from the database fact, the model makes sense.",
     },
     {
-        "title": "Type Hints Changed My Life",
-        "content": "I used to think type hints were just extra typing (pun intended). But after using FastAPI, I see how they enable incredible tooling - better autocomplete, automatic validation, and self-documenting code.",
+        "title": "Dependency Injection Is a Request-Time Hand-Off",
+        "content": "When a route asks for a database session with Depends, FastAPI arranges to provide one for that request. The route focuses on its job instead of constructing every helper itself. This is not a hidden global database connection; it is an explicit dependency with a lifecycle.",
     },
     {
-        "title": "The Power of Dependency Injection",
-        "content": "FastAPI's dependency injection system is so elegant. Need a database session? Just add it as a parameter. Need the current user? Same thing. It makes the code so clean and testable.",
+        "title": "Async Means Yield While Waiting",
+        "content": "An async endpoint does not make the CPU faster. It gives the program a chance to work on something else while this request waits for I/O, such as a database reply. If the code calls a blocking operation, the event loop can still get stuck. The mental picture is waiting efficiently, not doing everything at once.",
     },
     {
-        "title": "SQLAlchemy 2.0 Is Worth the Upgrade",
-        "content": "If you're still using SQLAlchemy 1.x patterns, it's time to upgrade. The new 2.0 style with select() and mapped_column() is much more explicit and works beautifully with async.",
+        "title": "The Useful Difference Between 401 and 403",
+        "content": "A 401 response is about identity: the request has not proved who it is. A 403 is about permission: the server knows who is asking but that person cannot do this action. That distinction turns vague access errors into a much clearer map of the authorization flow.",
     },
     {
-        "title": "Hot Take: Python > JavaScript for APIs",
-        "content": "Yes, I said it. For backend APIs, Python with FastAPI beats Node.js. Fight me in the comments. (Just kidding, this blog doesn't have comments... yet.)",
+        "title": "A Password Should Never Come Back From the Database",
+        "content": "The application needs to verify a password, not retrieve the original one. Store a slow password hash, then compare a login attempt against that hash. If a database copy leaks, hashing does not make the risk disappear, but it avoids handing attackers a neat list of reusable passwords.",
     },
     {
-        "title": "Understanding HTTP Status Codes",
-        "content": "200 OK, 201 Created, 400 Bad Request, 404 Not Found, 500 Internal Server Error. Learn these codes - they're how your API communicates with the world. FastAPI makes it easy to return the right ones.",
+        "title": "JWTs Carry Identity, Not Permission by Themselves",
+        "content": "A signed token can tell the server which user authenticated, and the signature helps detect tampering. That does not automatically mean the user may edit every record. The route still needs an authorization check for the specific resource and action.",
     },
     {
-        "title": "Some of My Favorite Video Games",
-        "content": "The one I probably play the most, but not my favorite, is League of Legends... It's a love/hate relationship. If you play, you get it. My favorites are all single-player RPGs. The Elder Scrolls series (Especially Morrowind and Skyrim) were awesome. The Baldur's Gate series took up a lot of my time as a kid, and more recently, the 3rd one was great. Speaking of Baldur's Gate, I love that old isometric style of RPG, so I looked for more modern equivalents and found Pillars of Eternity, which was fantastic. Also both Pathfinder: Kingmaker and Wrath of the Righteous were a lot of fun as well.",
+        "title": "The IDOR Bug Hides in a Missing Comparison",
+        "content": "Imagine Alice changes a URL from /posts/12 to /posts/13 and sees Bob's private draft. The problem is not that IDs are easy to guess; the server failed to check ownership. Every request that reads or changes a protected object needs the right authorization rule.",
     },
     {
-        "title": "JWT Authentication Demystified",
-        "content": "JSON Web Tokens seemed scary at first, but they're actually pretty simple. Encode some user data, sign it with a secret, and use it to verify requests. FastAPI + PyJWT makes it straightforward.",
+        "title": "Path or Query? Let the Resource Tell You",
+        "content": "A path like /posts/42 names the particular post. A query like /posts?limit=10 asks for a shaped view of a collection. That is a useful rule of thumb, not a law of physics, but it keeps routes readable and predictable.",
     },
     {
-        "title": "Tips for API Design",
-        "content": "Use nouns for resources (/users, /posts), HTTP verbs for actions (GET, POST, PUT, DELETE), and return consistent responses. FastAPI's response_model helps enforce this consistency.",
+        "title": "Pagination Is a Promise About Bounded Work",
+        "content": "A list endpoint should not surprise its database or its caller with a million-row response. Limit and offset are simple to learn, and cursor pagination can be a better fit when lists change frequently. Either way, put a sensible upper bound on page size.",
     },
     {
-        "title": "Path Parameters vs Query Parameters",
-        "content": "Use path parameters for required resource identifiers (/users/123) and query parameters for optional filters (/posts?author=corey&limit=10). FastAPI handles both beautifully with automatic validation.",
+        "title": "An ORM Query Still Has a Cost",
+        "content": "SQLAlchemy makes database work feel like Python, but it still sends SQL to a database. A relationship load can quietly become many queries if used carelessly. I now ask two questions: what SQL does this produce, and how many times will it run?",
     },
     {
-        "title": "Error Handling Done Right",
-        "content": "Don't just return 500 for everything! Use HTTPException to return meaningful status codes and messages. Your API consumers will thank you when debugging issues.",
+        "title": "Why Migrations Beat Recreating Tables",
+        "content": "A schema change is a change to stored data, not just a line of Python. A migration records how to move from one database shape to another, so existing rows survive deployments. Creating tables from models is handy for a fresh learning database, but it is not a history of production changes.",
     },
     {
-        "title": "Why I Switched to UV",
-        "content": "UV is blazingly fast for Python package management. Install packages in milliseconds instead of minutes. If you haven't tried it yet, you're missing out!",
+        "title": "A Transaction Is All-or-Nothing Work",
+        "content": "Suppose an operation needs to update an account and record an audit event. If the first write succeeds and the second fails, partial state can be confusing. A transaction groups related database changes so they commit together or can be rolled back together.",
     },
     {
-        "title": "What About Favorite Books?",
-        "content": "I don't read a lot of fiction. The last fiction book I read was 'The Martian' by Andy Weir, which I really enjoyed. But most of my reading is non-fiction. Some of my favorites are 'Meditations' by Marcus Aurelius, 'Conscious' by Annaka Harris, 'How to Die' by Seneca, and 'The Last Lecture' by Randy Pausch. The latest fiction book I'm reading through (and have been for a while) is 'House of Leaves' by Mark Z. Danielewski. It's... different, but awesome.",
+        "title": "A Useful Error Does Not Reveal Everything",
+        "content": "Clients need to know whether an input was invalid or a resource was missing. They do not need a traceback, database URL, or secret in the response. Give callers a clear next step and send diagnostic detail to protected logs instead.",
     },
     {
-        "title": "Testing FastAPI Applications",
-        "content": "FastAPI's TestClient makes testing a breeze. Write tests for your endpoints, mock dependencies, and catch bugs before they hit production. Your future self will thank you.",
+        "title": "Logs Tell the Story Metrics Cannot",
+        "content": "A latency graph can tell me that requests slowed down. A structured log with a request ID can help me trace one failing request through its steps. Metrics show patterns; logs add event detail. Neither is a substitute for the other.",
     },
     {
-        "title": "Environment Variables and Security",
-        "content": "Never hardcode secrets! Use environment variables and pydantic-settings to keep your API keys, database URLs, and JWT secrets safe. It's Security 101.",
+        "title": "Health Checks Need a Clear Question",
+        "content": "A liveness check asks whether the process should be restarted. A readiness check asks whether it can handle traffic right now. Combining every dependency into one vague health endpoint can make an orchestrator restart a healthy process for a temporary database hiccup.",
     },
     {
-        "title": "CORS: The Bane of Frontend Devs",
-        "content": "Getting CORS errors? FastAPI's CORSMiddleware is your friend. Just remember: be specific about allowed origins in production. Don't use '*' unless you really mean it.",
+        "title": "The Smallest Useful Rate Limit",
+        "content": "A public endpoint can be correct and still be abused. Rate limiting puts a ceiling on how often a client can call it in a time window. Start with the endpoint that has a real cost or abuse risk, then choose a limit you can explain and observe.",
     },
     {
-        "title": "Async Database Queries",
-        "content": "Blocking database calls in async code? That's a performance killer. Use async drivers like psycopg (for PostgreSQL) or aiosqlite to keep your event loop happy.",
+        "title": "CORS Is a Browser Rule, Not API Authentication",
+        "content": "CORS tells browsers which web origins may read responses. It does not stop curl, a mobile app, or a server from calling the API, and it does not prove a caller is authorized. That distinction cleared up why a CORS setting cannot replace authentication.",
     },
     {
-        "title": "The Beauty of Response Models",
-        "content": "Response models aren't just for documentation - they filter out sensitive fields automatically. Define what goes out, and Pydantic handles the rest.",
+        "title": "When Background Tasks Are Enough",
+        "content": "Sending a small email after a response can be a reasonable use for a framework background task. But work that must survive a process crash or be retried reliably usually needs a durable queue. The right tool depends on whether losing that work is acceptable.",
     },
     {
-        "title": "Let's Talk Board Games",
-        "content": "I love Settlers of Catan. It's a classic for a reason. I'm actually going to make a sword in my woodshop soon that will be my friend group's trophy for the annual Catan champion that we're going to call 'The Katana of Catan'. One thing I've always wanted to do, but never have, is play an in-person Dungeons & Dragons campaign. I've played so many D&D inspired video games, but never the real deal. Hopefully someday...",
+        "title": "Retries Need a Duplicate Plan",
+        "content": "A timeout does not tell a client whether the server completed the operation. If the client retries a payment or job blindly, it might happen twice. Idempotency gives repeated requests a stable identity so the system can recognize work it has already done.",
     },
     {
-        "title": "API Versioning Strategies",
-        "content": "APIs evolve. Version them from day one! Whether you use URL prefixes (/v1/users) or headers, plan for change. Breaking changes without versioning breaks trust.",
+        "title": "OpenAPI Is a Contract You Can Inspect",
+        "content": "FastAPI's OpenAPI document describes routes, inputs, and responses in a format tools can read. That is useful for generated clients and interactive docs, but it only reflects what the application declares. A misleading schema is still misleading documentation.",
     },
     {
-        "title": "Background Tasks in FastAPI",
-        "content": "Don't make users wait for emails to send or files to process. FastAPI's BackgroundTasks lets you return immediately while work continues in the background.",
+        "title": "A WebSocket Is a Conversation Left Open",
+        "content": "A normal HTTP request usually ends with a response. A WebSocket connection stays open so both sides can keep sending messages. That is useful for live updates, but it also means managing connection lifetime, reconnects, and slow clients becomes part of the application.",
     },
     {
-        "title": "Rate Limiting Your API",
-        "content": "Protect your API from abuse with rate limiting. Too many requests? Return 429 Too Many Requests. Your server (and your wallet) will thank you.",
+        "title": "Saturday's Sourdough Deployment",
+        "content": "My starter has better uptime than some of my first side projects. It needs regular feeding, a warm environment, and a little patience. Bread is not software, of course, but the habit of checking conditions before changing a process has made both my kitchen experiments and my deployments calmer.",
     },
     {
-        "title": "Documentation That Writes Itself",
-        "content": "Add docstrings to your endpoints and they appear in Swagger UI. Add examples to your Pydantic models and they show up too. Documentation has never been this easy.",
+        "title": "Custom Validation Should Protect a Real Rule",
+        "content": "A custom validator is useful when a field's rule cannot be expressed as a simple type or length. Before writing one, I try to state the rule in a sentence and name the bad input it rejects. If I cannot describe that case, I may be adding cleverness without protection.",
     },
     {
-        "title": "WebSockets with FastAPI",
-        "content": "REST isn't the only game in town. FastAPI supports WebSockets for real-time communication. Chat apps, live updates, notifications - all possible!",
+        "title": "My Debugging Checklist for a Slow Route",
+        "content": "First I reproduce one slow request and note its inputs. Then I separate time spent in the application from time waiting on the database or another service. A timer around every line is noisy; a few meaningful spans and a request ID make the path easier to understand.",
     },
     {
-        "title": "Favorite Hobbies, You Ask?",
-        "content": "Woodworking, hands down. I love making things with wood, but I wish I had more time for it. There's something special about making something with your own hands, with materials that are local. A lot of the stuff I've built came from trees that fell on my family's property. My stuff might not always be as good as something you buy in a store, but there's a story and a connection there that makes it better than anything I could buy elsewhere.",
+        "title": "A Container Is a Package, Not a Backup",
+        "content": "An image can make application code and its runtime more repeatable across environments. It does not automatically protect the database, keep secrets safe, or make a deployment healthy. I think of the image as one deliverable in a release, not the whole release plan.",
     },
     {
-        "title": "Custom Validators in Pydantic",
-        "content": "Need validation beyond type checking? Pydantic's field_validator and model_validator decorators let you add custom logic. Validate emails, check password strength, whatever you need.",
+        "title": "Configuration Should Fail Clearly",
+        "content": "A missing production secret should stop startup with a clear message, not quietly fall back to a known default. Validating configuration early turns a mysterious authentication failure into an actionable deployment error.",
     },
     {
-        "title": "The ORM vs Raw SQL Debate",
-        "content": "ORMs like SQLAlchemy add abstraction but can hide performance issues. Know when to use the ORM and when to drop to raw SQL. Both have their place.",
+        "title": "A Good Test Names the Behavior",
+        "content": "A test called 'test_update_post' tells me very little. 'A different user cannot edit this post' tells me the rule and the failure to guard against. Clear test names become a small map of what the application promises.",
     },
     {
-        "title": "Debugging Async Code",
-        "content": "Async bugs can be tricky. Use logging liberally, understand the event loop, and don't mix sync and async without care. asyncio.run() is your entry point.",
+        "title": "The Test Database Is Part of the Test",
+        "content": "An API test that accidentally uses my local blog database is not isolated; it can change data I care about and pass for the wrong reasons. A separate test database and predictable fixtures make each run safer and easier to trust.",
     },
     {
-        "title": "Containerizing FastAPI Apps",
-        "content": "Docker + FastAPI = deployment bliss. Create a Dockerfile, build your image, and deploy anywhere. Consistency across environments is priceless.",
+        "title": "Tenant IDs Need a Trusted Source",
+        "content": "In a shared SaaS database, filtering by organization_id is essential, but accepting that ID directly from a request does not prove membership. The server should derive the active organization from the authenticated user and verify access before reading or changing tenant data.",
     },
     {
-        "title": "Health Check Endpoints",
-        "content": "Add a /health endpoint to your API. Load balancers and orchestrators need to know if your service is alive. Return 200 if healthy, details if not. I didn't do this in this tutorial, but there's only so much time in a video!",
+        "title": "A Tenant Isolation Test Uses Two Accounts",
+        "content": "Create one record for Acme and another for Northstar. Authenticate as an Acme member, then try to fetch Northstar's record. The expected denial proves more than a happy-path test: it checks the boundary that keeps one customer's data away from another.",
     },
     {
-        "title": "Hmm... What Else?",
-        "content": "I'm running out of ideas for these blog posts. Maybe I should just write about how great FastAPI is... Oh wait, I've already done that multiple times. Well, if you're still reading, thanks for sticking with it! You're awesome.",
+        "title": "The Modular Monolith Is a Real Architecture",
+        "content": "Keeping one deployable application does not mean putting everything in one file. Clear modules can separate accounts, posts, and billing while keeping local calls simple. A modular monolith gives boundaries without making every request cross a network.",
     },
     {
-        "title": "Pagination: Don't Return Everything",
-        "content": "Returning 10,000 records in one response? Please don't. Implement pagination with limit and offset (or better, cursor-based). Your database and clients will be happier.",
+        "title": "A Microservice Adds a Network Between Ideas",
+        "content": "Splitting a module into a service changes more than the folder name. Calls can time out, requests can be duplicated, and deployments can disagree about a contract. I want a concrete ownership or scaling reason before adding those costs; 'microservices are modern' is not a reason.",
     },
     {
-        "title": "OpenAPI Schema Customization",
-        "content": "FastAPI's auto-generated OpenAPI schema is great, but sometimes you need to customize. Add examples, descriptions, and tags to make your docs shine.",
+        "title": "A Request ID Makes a Log Trail",
+        "content": "When a user reports a failed save, searching logs by timestamp alone is a guessing game. A request ID can travel with the request and its log messages, letting me follow one attempt through the service. It is a small operational detail with a very human payoff.",
     },
     {
-        "title": "Security Headers Matter",
-        "content": "Add security headers to your responses: X-Content-Type-Options, X-Frame-Options, Content-Security-Policy. Small effort, big security improvement.",
+        "title": "My Favorite Debugging Tool Is a Smaller Example",
+        "content": "When a bug involves five users, three tables, and a background job, I reduce it to one user and one request. A tiny reproduction removes noise without changing the rule. Once that version makes sense, I add the missing complexity back one piece at a time.",
     },
     {
-        "title": "Caching Strategies",
-        "content": "Not every request needs to hit the database. Use caching with Redis or even in-memory for frequently accessed data. Your response times will plummet (in a good way).",
+        "title": "A Feature Flag Is Not an Authorization Check",
+        "content": "A feature flag can decide whether a capability is turned on for a rollout. It should not be the only thing stopping one user from reading another user's data. Rollout control and access control solve different problems and deserve different checks.",
     },
     {
-        "title": "GraphQL vs REST",
-        "content": "GraphQL is trendy, but REST is battle-tested. Choose based on your needs, not hype. FastAPI excels at REST, but Strawberry brings GraphQL if you need it.",
+        "title": "Build the Slow Path on Purpose",
+        "content": "A user can lose a network connection after the server commits a change but before the response arrives. That awkward middle state is normal in distributed systems. Design the client and endpoint so retrying or checking the result does not turn uncertainty into duplicate work.",
     },
     {
-        "title": "Movie Quotes!",
-        "content": "'You wanna know how I did it? This is how I did it, Anton. I never saved anything for the swim back.' - 'Gattaca'. One of my favorite movies of all time. As silly as it sounds, that movie is actually one of the main reasons I decided to pursue an internship at NASA back in college. After that internship, I found I had a craving to learn and do more. It pushed me to take programming more seriously, which eventually led me to where I am today... Which is writing a blog post about FastAPI that's just meant to fill space. TLDR: I watched Gattaca and now I'm writing sample blog posts at 3am on a Saturday for this FastAPI tutorial. And you can too!",
+        "title": "The Beginner's Advantage Is Asking What Happens Next",
+        "content": "When I read a route now, I follow it line by line: what value enters, what check runs, what state changes, and what response leaves? That question works for authentication, database writes, and background tasks. It turns a wall of code into a sequence of causes and effects.",
     },
 ]
 
-# The 44th post - always the oldest (easter egg for pagination tutorial)
+# Inserted first so the pagination example always has an oldest post.
 POST_44 = {
-    "title": "Fun Fact: My High School Football Number Was #44",
-    "content": "If you've paginated all the way to this post, the 44th one... you get to learn this fun fact: that my high school football number was #44. Other notable absolute legends who wore number #44 include: Jerry West (NBA - Also fellow WV Native), Hank Aaron (MLB), and Floyd Little (NFL).",
+    "title": "The Last Page Has a Note for the Curious",
+    "content": "You made it to the oldest post in this little demo library. There is no secret prize, just a reminder that pagination is easier to understand when the records have dates and a stable order. Thanks for following the trail all the way back here.",
 }
 
 
@@ -243,6 +243,7 @@ async def clear_existing_data() -> None:
 
     # Clear database tables (order respects foreign keys)
     async with AsyncSessionLocal() as db:
+        await db.execute(delete(models.PasswordResetToken))
         await db.execute(delete(models.Post))
         await db.execute(delete(models.User))
         await db.commit()
